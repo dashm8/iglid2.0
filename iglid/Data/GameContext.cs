@@ -33,8 +33,7 @@ namespace iglid.Data
 
             builder.Entity<ApplicationUser>()
                 .HasOne<Team>()
-                .WithOne(x => x.Leader).HasForeignKey<Team>(x => x.LeaderId);
-            
+                .WithOne(x => x.Leader).HasForeignKey<Team>(x => x.LeaderId);            
         }
     }
 }

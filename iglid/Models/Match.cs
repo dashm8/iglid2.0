@@ -51,7 +51,17 @@ namespace iglid.Models
     //wait: waiting for other team to report 
     //dispute: reports do not match
     public enum BestOf {one=1,three=3,five=5}
-    public enum Maps {a,b,c,d,e}
+
+    public enum Maps
+    {
+        Ardennes_Forest,
+        Gibraltar,
+        London_Docks,
+        Saint_Marie_Du_Mont,
+        USS_Texas,
+        Flak_Tower
+    }
+
     public enum Modes
     {
         VARIANT,//presets for bo3 and bo5
@@ -59,4 +69,5 @@ namespace iglid.Models
         CTF,
         HP
     }
+
 }

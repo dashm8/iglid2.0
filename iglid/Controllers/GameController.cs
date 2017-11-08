@@ -72,9 +72,12 @@ namespace iglid.Controllers
                 return Error(MassageId.Error);
             if (team.CanPlay)
                 return NotFound();
-            Match match = new Match(team, model.Date,GetBestOf(model.bestof),GetModes(model.mode));
+            BestOf bestOf = GetBestOf(model.bestof);
+            Modes modes = GetModes(model.mode);
+            Match match = new Match(team, model.Date,bestOf,modes);
             match.maps = null;
             match.Id = Utils.randommathid();
+            match.maps = GenerateMaps(bestOf, modes);
             UpdateMatchOnDb(match,team);            
             await _TeamContext.matches.AddAsync(match);
             return RedirectToAction("Profile", "Team", team.ID);
@@ -191,6 +194,7 @@ namespace iglid.Controllers
                 return Modes.CTF;
             return Modes.HP;
         }
+
         private List<Maps> GetMaps(BestOf bo,Modes modes)
         {
             if (bo == BestOf.one)
@@ -199,6 +203,7 @@ namespace iglid.Controllers
             }
             return null;
         }
+
         private Task<ApplicationUser> GetCurrentUserAsync()
         {
             return _UserManager.GetUserAsync(HttpContext.User);
@@ -215,6 +220,57 @@ namespace iglid.Controllers
                 }
             }
             return true;
+        }
+
+        private List<Maps> GenerateMaps(BestOf bestOf,Modes modes)
+        {
+            List<Maps> ret = new List<Maps>();
+            if(modes == Modes.VARIANT)
+            {
+                switch (bestOf)
+                {
+                    case BestOf.one:
+                        ret.Add(MapEnums.GetRandomMap(Modes.HP));
+                        return ret;
+                    case BestOf.three:
+                        ret.Add(MapEnums.GetRandomMap(Modes.HP));
+                        ret.Add(MapEnums.GetRandomMap(Modes.SANDD));
+                        ret.Add(MapEnums.GetRandomMap(Modes.CTF));
+                        return ret;
+                    case BestOf.five:
+                        ret.Add(MapEnums.GetRandomMap(Modes.HP));
+                        ret.Add(MapEnums.GetRandomMap(Modes.SANDD));
+                        ret.Add(MapEnums.GetRandomMap(Modes.CTF));
+                        ret.Add(MapEnums.GetRandomMap(Modes.HP));
+                        ret.Add(MapEnums.GetRandomMap(Modes.SANDD));
+                        return ret;
+                    default:
+                        return ret;
+                }
+            }
+            else
+            {
+                switch (bestOf)
+                {
+                    case BestOf.one:
+                        ret.Add(MapEnums.GetRandomMap(modes));
+                        return ret;
+                    case BestOf.three:
+                        ret.Add(MapEnums.GetRandomMap(modes));
+                        ret.Add(MapEnums.GetRandomMap(modes));
+                        ret.Add(MapEnums.GetRandomMap(modes));
+                        return ret;
+                    case BestOf.five:
+                        ret.Add(MapEnums.GetRandomMap(modes));
+                        ret.Add(MapEnums.GetRandomMap(modes));
+                        ret.Add(MapEnums.GetRandomMap(modes));
+                        ret.Add(MapEnums.GetRandomMap(modes));
+                        ret.Add(MapEnums.GetRandomMap(modes));
+                        return ret;
+                    default:
+                        return ret;
+                }
+            }
         }
 
         private async void UpdateMatchOnDb(Match match,Team team)
